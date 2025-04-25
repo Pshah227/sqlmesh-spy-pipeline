@@ -1,7 +1,10 @@
 # ExecutingFile
-To execute the file run sqlmesh plan and then sqlmesh evaluate spy_transformed and sqlmesh evaluate spy_validation_metrics
+To execute the file run 
+sqlmesh plan  
+sqlmesh evaluate spy_transformed 
+sqlmesh evaluate spy_validation_metrics
 
-# creating 
+# File Purpose
 load_spy_data.py
 
 Purpose: Downloads historical SPY ETF data using the yfinance Python library and saves it as a CSV.
