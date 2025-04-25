@@ -1,0 +1,128 @@
+2025-04-25 12:02:08,411 - MainThread - sqlmesh.core.config.connection - INFO - Creating new DuckDB adapter for data files: {'spy_analysis.db'} (connection.py:321)
+2025-04-25 12:02:08,816 - MainThread - sqlmesh.core.config.connection - INFO - Using existing DuckDB adapter due to overlapping data file: spy_analysis.db (connection.py:311)
+2025-04-25 12:02:31,730 - MainThread - sqlmesh.core.snapshot.evaluator - INFO - Listing data objects in schema sqlmesh__default (evaluator.py:338)
+2025-04-25 12:02:31,732 - MainThread - sqlmesh.core.engine_adapter.base - INFO - Executing SQL: SELECT CURRENT_CATALOG() (base.py:2132)
+2025-04-25 12:02:31,734 - MainThread - sqlmesh.core.engine_adapter.base - INFO - Executing SQL: SELECT table_name AS name, table_schema AS schema, CASE table_type WHEN 'BASE TABLE' THEN 'table' WHEN 'VIEW' THEN 'view' WHEN 'LOCAL TEMPORARY' THEN 'table' END AS type FROM system.information_schema.tables WHERE (table_catalog = 'spy_analysis' AND table_schema = 'sqlmesh__default') AND table_name IN ('spy_validation_metrics__2812068956', 'spy_seed__649841409', 'spy_transformed__3047724281', 'spy_staging__3889425585') (base.py:2132)
+2025-04-25 12:02:31,755 - MainThread - sqlmesh.core.snapshot.evaluator - INFO - Creating schema 'sqlmesh__default' (evaluator.py:1108)
+2025-04-25 12:02:31,755 - MainThread - sqlmesh.core.engine_adapter.base - INFO - Executing SQL: CREATE SCHEMA IF NOT EXISTS "sqlmesh__default" (base.py:2132)
+2025-04-25 12:02:31,760 - MainThread - sqlmesh.core.snapshot.evaluator - INFO - Creating table 'sqlmesh__default.spy_seed__649841409' (evaluator.py:1460)
+2025-04-25 12:02:31,761 - MainThread - sqlmesh.core.engine_adapter.base - INFO - Executing SQL: CREATE TABLE IF NOT EXISTS "sqlmesh__default"."spy_seed__649841409" AS WITH "raw_data" AS (SELECT * FROM READ_CSV('seeds/spy.csv', "columns" = {'date': 'TIMESTAMP', 'open': 'DOUBLE', 'high': 'DOUBLE', 'low': 'DOUBLE', 'close': 'DOUBLE', 'volume': 'BIGINT', 'dividends': 'DOUBLE', 'stock_splits': 'DOUBLE', 'capital_gains': 'DOUBLE', 'symbol': 'TEXT'}) AS "_q_0" WHERE FALSE) SELECT "date" AS "date", "open" AS "open", "high" AS "high", "low" AS "low", "close" AS "close", "volume" AS "volume", "dividends" AS "dividends", "stock_splits" AS "stock_splits", "capital_gains" AS "capital_gains", "symbol" AS "sdsd" FROM "raw_data" AS "raw_data" WHERE FALSE LIMIT 0 (base.py:2132)
+2025-04-25 12:02:31,865 - MainThread - sqlmesh.core.snapshot.evaluator - INFO - Creating table 'sqlmesh__default.spy_staging__3889425585' (evaluator.py:1460)
+2025-04-25 12:02:31,866 - MainThread - sqlmesh.core.engine_adapter.base - INFO - Executing SQL: CREATE TABLE IF NOT EXISTS "sqlmesh__default"."spy_staging__3889425585" AS SELECT "date" AS "date", "symbol" AS "symbol", "open" AS "open", "high" AS "high", "low" AS "low", "close" AS "close", "volume" AS "volume" FROM "sqlmesh__default"."spy_seed__649841409" AS "spy_seed" WHERE (NOT "date" IS NULL AND NOT "close" IS NULL AND "volume" > 0) AND FALSE LIMIT 0 (base.py:2132)
+2025-04-25 12:02:31,871 - MainThread - sqlmesh.core.plan.evaluator - INFO - Execution failed for node SnapshotId<"spy_staging": 2890294829> (evaluator.py:293)
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 227, in sequential_apply_to_dag
+    fn(node)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 165, in <lambda>
+    lambda s_id: fn(snapshots_by_id[s_id]),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 402, in <lambda>
+    lambda s: self._create_snapshot(
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 867, in _create_snapshot
+    self._execute_create(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 1142, in _execute_create
+    evaluation_strategy.create(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 1485, in create
+    self.adapter.ctas(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/shared.py", line 302, in internal_wrapper
+    return func(*list_args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 547, in ctas
+    return self._create_table_from_source_queries(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 767, in _create_table_from_source_queries
+    self._create_table(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 805, in _create_table
+    self.execute(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 2129, in execute
+    self._execute(sql, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 2135, in _execute
+    self.cursor.execute(sql, **kwargs)
+duckdb.duckdb.BinderException: Binder Error: Column "symbol" referenced that exists in the SELECT clause - but this column cannot be referenced before it is defined
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/plan/evaluator.py", line 279, in _push
+    completion_status = self.snapshot_evaluator.create(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 379, in create
+    self._create_snapshots(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 400, in _create_snapshots
+    concurrent_apply_to_snapshots(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 163, in concurrent_apply_to_snapshots
+    return concurrent_apply_to_dag(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 198, in concurrent_apply_to_dag
+    return sequential_apply_to_dag(dag, fn, raise_on_error)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 233, in sequential_apply_to_dag
+    raise error
+sqlmesh.utils.concurrency.NodeExecutionFailedError: Execution failed for node SnapshotId<"spy_staging": 2890294829>
+2025-04-25 12:02:31,875 - MainThread - sqlmesh.core.context - INFO - Plan application failed. (context.py:1500)
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 227, in sequential_apply_to_dag
+    fn(node)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 165, in <lambda>
+    lambda s_id: fn(snapshots_by_id[s_id]),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 402, in <lambda>
+    lambda s: self._create_snapshot(
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 867, in _create_snapshot
+    self._execute_create(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 1142, in _execute_create
+    evaluation_strategy.create(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 1485, in create
+    self.adapter.ctas(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/shared.py", line 302, in internal_wrapper
+    return func(*list_args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 547, in ctas
+    return self._create_table_from_source_queries(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 767, in _create_table_from_source_queries
+    self._create_table(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 805, in _create_table
+    self.execute(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 2129, in execute
+    self._execute(sql, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/engine_adapter/base.py", line 2135, in _execute
+    self.cursor.execute(sql, **kwargs)
+duckdb.duckdb.BinderException: Binder Error: Column "symbol" referenced that exists in the SELECT clause - but this column cannot be referenced before it is defined
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/plan/evaluator.py", line 279, in _push
+    completion_status = self.snapshot_evaluator.create(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 379, in create
+    self._create_snapshots(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/snapshot/evaluator.py", line 400, in _create_snapshots
+    concurrent_apply_to_snapshots(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 163, in concurrent_apply_to_snapshots
+    return concurrent_apply_to_dag(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 198, in concurrent_apply_to_dag
+    return sequential_apply_to_dag(dag, fn, raise_on_error)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/utils/concurrency.py", line 233, in sequential_apply_to_dag
+    raise error
+sqlmesh.utils.concurrency.NodeExecutionFailedError: Execution failed for node SnapshotId<"spy_staging": 2890294829>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/context.py", line 1492, in apply
+    self._apply(plan, circuit_breaker)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/context.py", line 2119, in _apply
+    self._scheduler.create_plan_evaluator(self).evaluate(
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/plan/evaluator.py", line 130, in evaluate
+    push_completion_status = self._push(plan, snapshots, deployability_index_for_creation)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sqlmesh/core/plan/evaluator.py", line 296, in _push
+    raise PlanError("Plan application failed.")
+sqlmesh.utils.errors.PlanError: Plan application failed.
+2025-04-25 12:02:31,897 - MainThread - root - INFO - Shutting down the event dispatcher (dispatcher.py:159)
